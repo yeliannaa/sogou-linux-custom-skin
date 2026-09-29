@@ -1,5 +1,7 @@
 # 从自己的素材制作皮肤
 
+已有 SSF 时先用 `python3 -B build.py --ssf /path/to/skin.ssf --out build/my-skin`。生成的 `build/my-skin/imported-theme/` 就是下文所说的可编辑主题目录。也可用 `python3 -B ssf_import.py /path/to/skin.ssf --out private/my-theme` 只导入，不要求已安装匹配搜狗。输入范围和报告见 [SSF 自动导入](SSF_IMPORT.md)。
+
 ## 目录结构
 
 ```text

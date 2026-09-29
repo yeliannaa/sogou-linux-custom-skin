@@ -4,7 +4,19 @@
 
 这是从一次实际使用成功的搜狗 Linux 换肤任务提炼出来的工具和适配记录。方法是复用搜狗已识别的皮肤槽位，在本地修改 XML / SVG / 图片引用并保持资源包格式；其他版本可以参照这个流程适配。**安装包的校验对应具体构建，方法可以复用，原生补丁需要另行核对 ABI。**
 
-[English](README.en.md) · [安装与回退](docs/INSTALL.md) · [制作自己的皮肤](docs/CUSTOMIZE.md) · [实现原理与版本适配](docs/ADAPTATION.md) · [验证范围](docs/VALIDATION.md)
+[English](README.en.md) · [SSF 自动导入](docs/SSF_IMPORT.md) · [安装与回退](docs/INSTALL.md) · [制作自己的皮肤](docs/CUSTOMIZE.md) · [实现原理与版本适配](docs/ADAPTATION.md) · [验证范围](docs/VALIDATION.md)
+
+## 已有 SSF：自动生成适配草稿
+
+```bash
+python3 -B build.py --ssf /path/to/skin.ssf --out build/my-skin
+```
+
+自动读取常见 SSF 的 PNG 图片、字体大小、颜色、文字边距与拉伸区域，生成搜狗 Linux 布局、静态预览、适配报告及可回退的安装包。没有新增 Python 依赖，不会自动安装或重启输入法。
+
+先打开 `build/my-skin/imported-theme/preview.html` 和同目录的 `import-report.json` 检查效果，再运行 `bash build/my-skin/install.sh --check`。确认要应用后使用 `bash build/my-skin/install.sh --activate`。
+
+当前自动入口支持 ZIP 型 SSF 的 H1/V1 单窗静态 PNG、拉伸模式 0。加密 SSF 可以先用其他工具在本地解包，再把解包目录传给 `--ssf`；复杂双窗、动画等会提示需要人工适配。**自动生成的是可检查的初稿，不承诺所有 SSF 一次转换就达到最终视觉效果。** 详见 [输入格式、回退和微调](docs/SSF_IMPORT.md)。
 
 ## 快速开始
 
@@ -37,7 +49,7 @@ python3 -B build.py --skin-root /path/to/original-skin-backups --out build/my-th
 
 复制 `examples/minimal` 到被 Git 忽略的 `private/my-theme`，设置 `theme.json`，将素材放在 `assets/`，将 XML / SVG 覆盖文件放在 `overlay/ime/`。图片通过 `@@ASSET_DIR@@` 引用，安装时转换为目标用户路径。支持横版候选框、竖版候选框、异形背景和可调整按钮位置的状态栏。
 
-细节见 [自定义教程](docs/CUSTOMIZE.md)。Windows `.ssf` 的素材可以作为本地适配输入；本工具不会把任意 `.ssf` 一键转换为 Linux 皮肤，布局需要核对和调整。
+细节见 [自定义教程](docs/CUSTOMIZE.md)。Windows `.ssf` 可以通过 `--ssf` 自动生成起点，再在生成的 `imported-theme/` 中微调。也可以完全自己编写布局。
 
 ## 状态栏回弹和 V 模式
 

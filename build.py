@@ -12,7 +12,7 @@ import subprocess
 import sys
 import tempfile
 import xml.etree.ElementTree as ET
-from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
+from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED, BadZipFile
 
 from archive_tools import build
 from bundle import fingerprint
@@ -167,6 +167,16 @@ def generate(args):
         })
         (stage / 'manifest.json').write_text(json.dumps(output_meta, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
         shutil.copyfile(str(ROOT / 'docs/INSTALL.md'), str(stage / 'README.md'))
+        if (theme / 'import-report.json').is_file():
+            # Keep a private, editable theme and its static preview next to the
+            # installer. These files are never copied into installed resources.
+            draft = stage / 'imported-theme'
+            draft.mkdir()
+            for name in ('theme.json', 'import-report.json', 'preview.html'):
+                shutil.copyfile(str(theme / name), str(draft / name))
+            for name in ('assets', 'overlay'):
+                if (theme / name).is_dir():
+                    shutil.copytree(str(theme / name), str(draft / name))
         (stage / 'SHA256SUMS').write_text(''.join(digest(f.read_bytes()) + '  ' + f.relative_to(stage).as_posix() + '\n'
                                                   for f in sorted(stage.rglob('*')) if f.is_file()), encoding='utf-8')
         os.rename(str(stage), str(out))
@@ -179,7 +189,9 @@ def generate(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--theme', type=Path, default=ROOT / 'examples/minimal')
+    inputs = parser.add_mutually_exclusive_group()
+    inputs.add_argument('--theme', type=Path, help='Prepared theme directory; defaults to examples/minimal')
+    inputs.add_argument('--ssf', type=Path, help='Import a classic ZIP SSF or unpacked Skin.ini directory before building')
     parser.add_argument('--profile', type=Path, default=PROFILE)
     parser.add_argument('--skin-root', type=Path, default=SYSTEM, help='Installed skin root or flat directory of original backups')
     parser.add_argument('--native', type=Path, default=NATIVE)
@@ -187,8 +199,20 @@ def main():
     parser.add_argument('--with-native-fixes', action='store_true', help='Compile the profile-specific bottom-position and V-mode hooks')
     args = parser.parse_args()
     try:
-        generate(args)
-    except (OSError, ValueError, KeyError, subprocess.SubprocessError) as exc:
+        if args.ssf:
+            from ssf_import import import_theme
+            with tempfile.TemporaryDirectory(prefix='sogou-ssf-draft-') as temp:
+                args.theme = Path(temp) / 'theme'
+                report = import_theme(args.ssf, args.theme)
+                if args.with_native_fixes and not report['native_v_layout_ready']:
+                    raise ValueError('SSF import did not produce a compatible V layout; build without --with-native-fixes and review the draft first')
+                generate(args)
+            print('Review the draft before installing: ' + str(args.out / 'imported-theme/preview.html'))
+            print('Limitations and mapping report: ' + str(args.out / 'imported-theme/import-report.json'))
+        else:
+            args.theme = args.theme or ROOT / 'examples/minimal'
+            generate(args)
+    except (OSError, ValueError, KeyError, BadZipFile, RuntimeError, subprocess.SubprocessError) as exc:
         parser.exit(1, 'Build stopped: ' + str(exc) + '\n')
 
 

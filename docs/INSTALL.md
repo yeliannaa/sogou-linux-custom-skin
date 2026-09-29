@@ -2,6 +2,8 @@
 
 在源码仓库中先运行 `python3 -B build.py --out build/minimal`。如果已拿到自己构建的安装目录，进入该目录后运行以下命令。
 
+通过 `--ssf` 构建的安装包还包含 `imported-theme/preview.html`、`import-report.json` 和可编辑主题。先检查报告中的未转换项与静态预览，再安装。这个目录包含你本地输入的素材，不会在安装时复制到运行目录，也不应随源码公开上传。
+
 1. `sha256sum -c SHA256SUMS`：检查文件完整性。
 2. `bash install.sh --check`：只读核对本机核心库、Fcitx、X11、已有皮肤槽位和配置。
 3. `bash install.sh --activate`：备份、安装并重载输入法。

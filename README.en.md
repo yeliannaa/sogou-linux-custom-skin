@@ -4,6 +4,16 @@ Customize Sogou Pinyin candidate windows, transparent image backgrounds, text sp
 
 [中文](README.md) · [Implementation and porting](docs/ADAPTATION.md) · [Asset provenance](docs/ASSETS.md)
 
+## Import an SSF automatically
+
+```bash
+python3 -B build.py --ssf /path/to/skin.ssf --out build/my-skin
+```
+
+This reads classic ZIP-based SSF metadata and unchanged PNG assets to produce a native Sogou Linux theme draft, a static HTML preview, a mapping report and a local installer. Review `build/my-skin/imported-theme/preview.html` and `import-report.json` before applying. No input method is modified or restarted during import/build.
+
+Initial support covers H1/V1 single-window layouts with stretch mode 0. Status-bar background and language/settings button coordinates are attempted when present. Complex dual-window schemes, animations and unsupported fields require manual adaptation. Encrypted `Skin` containers must first be unpacked with another local tool; the importer also accepts that unpacked directory. This is a reviewable starting point rather than a guarantee of pixel-perfect conversion. See [SSF import details](docs/SSF_IMPORT.md).
+
 ## How it works
 
 The original implementation adapted a Windows skin's artwork to Sogou Linux XML/SVG layouts through an existing recognized skin slot. The public builder reads the installed vendor ZIPs locally, modifies selected resources, and preserves the archive format expected by that Sogou build. It does not distribute Sogou binaries, vendor ZIPs, third-party artwork or personal configuration.
@@ -29,7 +39,7 @@ The minimal example uses original teal SVG backgrounds and native control layout
 
 ## Custom images and optional native fixes
 
-Copy `examples/minimal` to `private/my-theme`. Add your permitted images under `assets/`, XML/SVG overrides under `overlay/ime/`, and layout attribute updates to `theme.json`. SVG image paths can use `@@ASSET_DIR@@`, relocated at installation time. Build with `--theme private/my-theme`. This is not a universal automatic SSF converter.
+Copy `examples/minimal` to `private/my-theme`, or use the editable `imported-theme/` produced by `--ssf`. Add your permitted images under `assets/`, XML/SVG overrides under `overlay/ime/`, and layout attribute updates to `theme.json`. SVG image paths can use `@@ASSET_DIR@@`, relocated at installation time. Build with `--theme private/my-theme`.
 
 Two optional source patches address a floating status bar snapping upward after typing and forced-vertical V-mode using horizontal skin geometry:
 
