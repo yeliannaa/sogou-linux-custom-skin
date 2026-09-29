@@ -1,0 +1,20 @@
+{
+  "name": "minimal-teal",
+  "description": "Original vector example; keeps the installed skin's native control layout.",
+  "updates": {
+    "ime/wndComp.xml": {
+      "CompString": {"textcolor": "0xff83d8ce"},
+      "CandString": {"focus_candString_color": "0xffffd89b", "candString_color": "0xffe7f5f1"},
+      "caret": {"bkcolor": "0xff83d8ce"}
+    },
+    "ime/wndComp_vertical.xml": {
+      "CompString": {"textcolor": "0xff83d8ce"},
+      "CandString": {"focus_candString_color": "0xffffd89b", "candString_color": "0xffe7f5f1"},
+      "caret": {"bkcolor": "0xff83d8ce"}
+    }
+  },
+  "v_mode": {
+    "window": {"size": "285,300", "minwidth": "285", "minheight": "300"},
+    "candbk": {"minheight": "272"}
+  }
+}

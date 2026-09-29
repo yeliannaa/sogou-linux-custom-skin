@@ -1,0 +1,20 @@
+{
+  "profile": "sogou-4.2.1.145-x11-x86_64",
+  "sogou_version": "4.2.1.145",
+  "native_sha256": "e821f0de7193ced47ebaa592827f85c31da861075e98817bdea0bda6828665b7",
+  "architecture": "x86_64",
+  "input_method": "fcitx4",
+  "session": "x11",
+  "skins": {
+    "尊贵黑金": {
+      "size": 737303,
+      "native_hash": "f2c7e2407ab31f23fb3889ffde7a794f",
+      "source_sha256": "28654bb0b9bb2de06394dc29bb3bdc2e93fc7c9c50d8ac21d4335bff7df9409a"
+    },
+    "尊贵黑金-Compositing": {
+      "size": 725953,
+      "native_hash": "406ee005f8a6c507436f5890c093de15",
+      "source_sha256": "b996cc8f850fd43d3899ac60d352ce65794abca9a3adec0aa41a0ea586a04213"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+name: Source checks
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.8', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -B -m unittest discover -s tests -v
+      - run: bash -n install.sh uninstall.sh src/start-template.sh
+      - run: python -B tools/check_public.py
+  native:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y libx11-dev
+      - run: gcc -shared -fPIC -O2 -Wall -Wextra -Werror src/status_screen_fix.c -o /tmp/status-screen-fix.so -lX11 -ldl
+      - run: gcc -shared -fPIC -O2 -Wall -Wextra -Werror src/v_mode_fix.c -o /tmp/v-mode-fix.so -ldl
